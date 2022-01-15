@@ -49,8 +49,8 @@ jobs:
       - name: Setup Jupyter server
         run: |
           # make a jupyter server for the testing of the debugger
-          # each run uses different shell
-          jupyter notebook --port=8890 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.open_browser=False 
+          # add & for background run
+          jupyter notebook --port=8890 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.open_browser=False &
           
       - name: Test with pytest
         run: |
