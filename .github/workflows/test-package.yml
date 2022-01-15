@@ -54,7 +54,7 @@ jobs:
           
       - name: Test with pytest
         run: |
-          pytest test/test_trebugger.py --maximize-window --reuse-session --headed
+          pytest test/test_trebugger.py --no-sandbox --maximize-window --reuse-session --headed
 
       - name: cleanup logs and remove env
         run: |
