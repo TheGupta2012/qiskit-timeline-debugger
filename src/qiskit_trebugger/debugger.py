@@ -10,9 +10,11 @@ import warnings
 from IPython.display import display
 
 
-from qiskit import QuantumCircuit, transpile, Aer, __qiskit_version__
+from qiskit import QuantumCircuit, transpile, __version__
 from qiskit.providers.backend import Backend, BackendV1, BackendV2
 from qiskit.transpiler.basepasses import AnalysisPass, TransformationPass
+
+from qiskit_aer import Aer
 
 
 from qiskit_trebugger.model import TranspilerLoggingHandler
@@ -90,8 +92,7 @@ class Debugger:
         transpilation_sequence.general_info = {
             "backend": backend_name,
             "optimization_level": optimization_level,
-            "qiskit version": __qiskit_version__["qiskit"],
-            "terra version": __qiskit_version__["qiskit-terra"],
+            "qiskit version": __version__,
         }
 
         transpilation_sequence.original_circuit = circuit
