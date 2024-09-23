@@ -1,5 +1,6 @@
 """Implements enum for the transpiler passes.
 """
+
 from enum import Enum
 
 

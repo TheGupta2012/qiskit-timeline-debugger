@@ -1,7 +1,8 @@
 """Implements the circuit diff functionality for quantum circuits.
 """
-from qiskit.converters import dag_to_circuit, circuit_to_dag
-from numpy import zeros, uint16
+
+from numpy import uint16, zeros
+from qiskit.converters import circuit_to_dag, dag_to_circuit
 
 # make the global DP array
 LCS_DP = zeros((2000, 2000), dtype=uint16)

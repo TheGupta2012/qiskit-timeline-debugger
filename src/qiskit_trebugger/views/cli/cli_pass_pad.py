@@ -2,8 +2,8 @@
 """
 
 import curses
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
 
 import tabulate
 
@@ -57,9 +57,7 @@ class TranspilerPassPad:
         Args:
             None
         """
-        pass_name = f"{self.transpiler_pass.index}. {self.transpiler_pass.name}"[
-            : self.width - 1
-        ]
+        pass_name = f"{self.transpiler_pass.index}. {self.transpiler_pass.name}"[: self.width - 1]
         title_offset = self._get_center(self.width - 4, len(pass_name))
         self.pad.addstr(
             self._start_row,
@@ -79,9 +77,7 @@ class TranspilerPassPad:
         self._start_row += 2
         pass_type = self.transpiler_pass.pass_type.value
         pass_runtime = self.transpiler_pass.duration
-        info_string = f"Type : {pass_type} | Runtime (ms) : {pass_runtime}"[
-            : self.width - 1
-        ]
+        info_string = f"Type : {pass_type} | Runtime (ms) : {pass_runtime}"[: self.width - 1]
 
         self._display_header(info_string)
 
@@ -94,9 +90,11 @@ class TranspilerPassPad:
 
         self._start_row += 2
         stats = self.transpiler_pass.circuit_stats
-        props_string = f"Depth : {stats.depth} | Width : {stats.width} | Size : {stats.size} | 1Q Ops : {stats.ops_1q} | 2Q Ops : {stats.ops_2q}"[
-            : self.width - 1
-        ]
+        props_string = (
+            f"Depth : {stats.depth} | Width : {stats.width} | "
+            f"Size : {stats.size} | 1Q Ops : {stats.ops_1q} | "
+            f"2Q Ops : {stats.ops_2q}"[: self.width - 1]
+        )
 
         props_string = props_string[: self.width - 1]
         props_offset = self._get_center(self.width, len(props_string))
@@ -123,7 +121,7 @@ class TranspilerPassPad:
                 elif name == "optimization_loop_minimum_point_state":
                     txt = f"""score : {property_.value.score}, since : {property_.value.since}"""
                 elif name == "commutation_set":
-                    txt = f"(dict)"
+                    txt = "(dict)"
                 else:
                     txt = (
                         "(dict)"
@@ -293,7 +291,7 @@ class TranspilerPassPad:
 
         # add the layout to the pad
         self._start_row += 2
-        self._display_header(f"Commutation Set"[: self.width - 1])
+        self._display_header("Commutation Set"[: self.width - 1])
         self._start_row += 1
 
         comm_set = self.property_set["commutation_set"].value
@@ -318,7 +316,7 @@ class TranspilerPassPad:
             ).splitlines()
 
             table_offset = self._get_center(self.width, len(comm_table[0]))
-            for row, _ in enumerate(comm_table):
+            for row in range(len(comm_table)):
                 self.pad.addstr(
                     row + self._start_row,
                     table_offset,
@@ -343,9 +341,7 @@ class TranspilerPassPad:
         self._start_row += 1
         pass_docs = self.transpiler_pass.get_docs()
 
-        pass_docs = (
-            "    " + pass_docs if pass_docs and pass_docs.count("\n") > 0 else ""
-        )
+        pass_docs = "    " + pass_docs if pass_docs and pass_docs.count("\n") > 0 else ""
         pass_docs = [[pass_docs], [self.transpiler_pass.run_method_docs]]
 
         docs_table = tabulate.tabulate(
@@ -378,9 +374,7 @@ class TranspilerPassPad:
             circ_string = [[self.circuit.draw(output="text", fold=100)]]
         else:
             circ_string = [
-                [
-                    f"Circuit depth {self.transpiler_pass.circuit_stats.depth} too large to display"
-                ]
+                [f"Circuit depth {self.transpiler_pass.circuit_stats.depth} too large to display"]
             ]
         circ_table = tabulate.tabulate(
             tabular_data=circ_string,

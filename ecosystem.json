@@ -7,7 +7,7 @@
     ],
     "language": {
         "name": "python",
-        "versions": ["3.8"]
+        "versions": ["3.9", "3.10", "3.11"]
     },
     "tests_command": [
         "pytest"

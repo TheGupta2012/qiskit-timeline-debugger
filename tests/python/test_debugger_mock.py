@@ -1,32 +1,27 @@
 import unittest
 
 from qiskit.circuit.random import random_circuit
-from qiskit.providers.fake_provider import (
-    FakeAlmaden,
-    FakeAthens,
-    FakeBelem,
-    FakeKolkata,
-)
-from qiskit.providers.fake_provider import (
-    FakeAlmadenV2,
+from qiskit_ibm_runtime.fake_provider import (
     FakeAthensV2,
     FakeBelemV2,
-    FakeKolkataV2,
+    FakeSherbrooke,
+    FakeBrisbane,
+    FakeKyiv,
 )
 
 from qiskit_trebugger import Debugger
+import pytest
 
 MAX_DEPTH = 5
 
 
-class TestDebuggerMock(unittest.TestCase):
+class TestDebuggerMock:
     """Unit tests for different IBMQ fake backends v2"""
 
-    all_backends_1 = [FakeAthens(), FakeBelem(), FakeAlmaden(), FakeKolkata()]
-    all_backends_2 = [FakeAthensV2(), FakeBelemV2(), FakeAlmadenV2(), FakeKolkataV2()]
+    all_backends = [FakeAthensV2(), FakeBelemV2(), FakeSherbrooke(), FakeBrisbane(), FakeKyiv()]
 
     def _internal_tester(self, view, backend, num_qubits):
-        for qubits in range(1, num_qubits, 3):
+        for qubits in [1, num_qubits // 2, num_qubits]:
             circ = random_circuit(qubits, MAX_DEPTH, measure=True)
             debugger = Debugger()
             debugger.debug(
@@ -36,18 +31,9 @@ class TestDebuggerMock(unittest.TestCase):
                 show=False,
             )
 
-    def test_backend_v1(self):
+    @pytest.mark.parametrize("backend", all_backends)
+    def test_backend_v2(self, backend):
         """Backend V2 tests"""
         for view in ["jupyter"]:
-            for curr_backend in self.all_backends_1:
-                print(f"Testing with {curr_backend.name()}...")
-                self._internal_tester(
-                    view, curr_backend, curr_backend.configuration().num_qubits
-                )
-
-    def test_backend_v2(self):
-        """Backend V2 tests"""
-        for view in ["jupyter"]:
-            for curr_backend in self.all_backends_2:
-                print(f"Testing with {curr_backend.name}...")
-                self._internal_tester(view, curr_backend, curr_backend.num_qubits)
+            print(f"Testing with {backend.name}...")
+            self._internal_tester(view, backend, backend.num_qubits)

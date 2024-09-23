@@ -4,7 +4,6 @@ function.
 
 from copy import deepcopy
 
-
 from .pass_type import PassType
 from .property import Property
 from .transpilation_step import TranspilationStep
@@ -23,9 +22,7 @@ class TranspilerDataCollector:
         def callback(**kwargs):
             pass_ = kwargs["pass_"]
 
-            pass_type = (
-                PassType.ANALYSIS if pass_.is_analysis_pass else PassType.TRANSFORMATION
-            )
+            pass_type = PassType.ANALYSIS if pass_.is_analysis_pass else PassType.TRANSFORMATION
 
             transpilation_step = TranspilationStep(pass_.name(), pass_type)
             transpilation_step.docs = pass_.__doc__
@@ -43,9 +40,7 @@ class TranspilerDataCollector:
                     _added_props.append(key)
                 elif (self._properties[key] is None) and (value is not None):
                     _updated_props.append(key)
-                elif hasattr(value, "__len__") and (
-                    len(value) != len(self._properties[key])
-                ):
+                elif hasattr(value, "__len__") and (len(value) != len(self._properties[key])):
                     _updated_props.append(key)
 
             if len(_added_props) > 0 or len(_updated_props) > 0:

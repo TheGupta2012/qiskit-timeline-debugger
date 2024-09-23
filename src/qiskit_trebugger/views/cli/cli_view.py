@@ -5,10 +5,8 @@ import curses
 from curses.textpad import Textbox
 
 import tabulate
-
-from qiskit.dagcircuit import DAGCircuit
 from qiskit.converters import dag_to_circuit
-
+from qiskit.dagcircuit import DAGCircuit
 
 from ...model.pass_type import PassType
 from .cli_pass_pad import TranspilerPassPad
@@ -44,11 +42,15 @@ class CLIView:
         self._title_string = "Qiskit Transpiler Debugger"
 
         self._status_strings = {
-            "normal": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down | 'I': Index into a pass | 'H': Toggle overview | 'Q': Exit",
+            "normal": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down |"
+            " 'I': Index into a pass | 'H': Toggle overview | 'Q': Exit",
             "index": " STATUS BAR  | Enter the index of the pass you want to view : ",
             "invalid": " STATUS BAR  | Invalid input entered. Press Enter to continue.",
-            "out_of_bounds": " STATUS BAR  | Number entered is out of bounds. Please Enter to continue.",
-            "pass": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down | 'N/P': Move to next/previous | 'I': Index into a pass | 'B': Back to home | 'Q': Exit",
+            "out_of_bounds": " STATUS BAR  | Number entered is out of bounds."
+            " Press Enter to continue.",
+            "pass": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down |"
+            " 'N/P': Move to next/previous | 'I': Index into a pass |"
+            " 'B': Back to home | 'Q': Exit",
         }
 
         self._colors = {
@@ -89,9 +91,7 @@ class CLIView:
 
         curses.init_pair(1, COLORS.TITLE["front"], COLORS.TITLE["back"])
         curses.init_pair(2, COLORS.STATUS["front"], COLORS.STATUS["back"])
-        curses.init_pair(
-            3, COLORS.BASE_PASSES_TITLE["front"], COLORS.BASE_PASSES_TITLE["back"]
-        )
+        curses.init_pair(3, COLORS.BASE_PASSES_TITLE["front"], COLORS.BASE_PASSES_TITLE["back"])
         curses.init_pair(4, COLORS.CHANGING_PASS["front"], COLORS.CHANGING_PASS["back"])
 
         self._colors["title"] = curses.color_pair(1)
@@ -191,9 +191,7 @@ class CLIView:
             self._view_params["curr_row"] = 0
 
         elif key in [ord("h"), ord("H")]:
-            self._view_params["overview_visible"] = not self._view_params[
-                "overview_visible"
-            ]
+            self._view_params["overview_visible"] = not self._view_params["overview_visible"]
             self._view_params["overview_change"] = True
             self._view_params["curr_col"] = 0
             self._view_params["curr_row"] = 0
@@ -297,13 +295,9 @@ class CLIView:
             else:
                 total_passes["A"] += 1
 
-        total_pass_str = f"Total Passes : {total_passes['A'] + total_passes['T']}"[
-            : cols - 1
-        ]
+        total_pass_str = f"Total Passes : {total_passes['A'] + total_passes['T']}"[: cols - 1]
         pass_categories_str = (
-            f"Transformation : {total_passes['T']} | Analysis : {total_passes['A']}"[
-                : cols - 1
-            ]
+            f"Transformation : {total_passes['T']} | Analysis : {total_passes['A']}"[: cols - 1]
         )
 
         start_x = 5
@@ -312,11 +306,9 @@ class CLIView:
         overview_win.addstr(7, start_x, pass_categories_str)
 
         # runtime
-        runtime_str = (
-            f"Runtime : {round(self.transpilation_sequence.total_runtime,2)} ms"[
-                : cols - 1
-            ]
-        )
+        runtime_str = f"Runtime : {round(self.transpilation_sequence.total_runtime,2)} ms"[
+            : cols - 1
+        ]
         overview_win.addstr(9, start_x, runtime_str, curses.A_BOLD)
 
         # circuit stats
@@ -349,9 +341,7 @@ class CLIView:
 
         # overview header
         overview_str = "TRANSPILATION OVERVIEW"[: cols - 1]
-        start_x_overview = start_x + self._get_center(
-            max_line_length, len(overview_str)
-        )
+        start_x_overview = start_x + self._get_center(max_line_length, len(overview_str))
         overview_win.hline(0, start_x, "_", min(cols, max_line_length))
         overview_win.addstr(2, start_x_overview, overview_str, curses.A_BOLD)
         overview_win.hline(3, start_x, "_", min(cols, max_line_length))
@@ -402,13 +392,16 @@ class CLIView:
 
             STATUS STATES
                 -normal        : normal status bar
-                -index         : index status bar - user is entering the numbers (requires input to be shown to user)
+                -index         : index status bar - user is entering the numbers
+                                 (requires input to be shown to user)
                 -invalid       : error status bar - user has entered an invalid character
                 -out_of_bounds : out of bounds status bar - user has entered a number out of bounds
-                -pass          : pass status bar - user has entered a valid number and is now viewing the pass details
+                -pass          : pass status bar - user has entered a valid number and is now
+                                 viewing the pass details
 
                 NOTE : processing is done after the user presses enter.
-                This will only return a status bar window, TEXT processing is done within this function ONLY
+                This will only return a status bar window, TEXT processing is done within
+                this function ONLY
         Returns:
             curses.window : Statusbar window object
         """
@@ -426,9 +419,7 @@ class CLIView:
         if status_type == "index":
             textbox = Textbox(statusbar_window)
             textbox.edit()
-            str_value = (
-                textbox.gather().split(":")[1].strip()
-            )  # get the value of the entered text
+            str_value = textbox.gather().split(":")[1].strip()  # get the value of the entered text
 
             try:
                 num = int(str_value)
@@ -467,8 +458,7 @@ class CLIView:
             self._title.noutrefresh()
 
         overview_toggle = (
-            self._view_params["overview_visible"]
-            and self._view_params["overview_change"]
+            self._view_params["overview_visible"] and self._view_params["overview_change"]
         )
         if resized or overview_toggle:
             try:
@@ -492,15 +482,11 @@ class CLIView:
         # Due to a bug in DAGCircuit.__eq__, we can not use ``step.dag != None``
 
         found_transform = False
-        while (
-            not isinstance(self.transpilation_sequence.steps[idx].dag, DAGCircuit)
-            and idx > 0
-        ):
+        while not isinstance(self.transpilation_sequence.steps[idx].dag, DAGCircuit) and idx > 0:
             idx = idx - 1
             if idx >= 0:
                 found_transform = (
-                    self.transpilation_sequence.steps[idx].pass_type
-                    == PassType.TRANSFORMATION
+                    self.transpilation_sequence.steps[idx].pass_type == PassType.TRANSFORMATION
                 )
 
         if not found_transform:
@@ -510,9 +496,7 @@ class CLIView:
 
     def _get_pass_property_set(self, step):
         if step.property_set_index is not None:
-            return self.transpilation_sequence.steps[
-                step.property_set_index
-            ].property_set
+            return self.transpilation_sequence.steps[step.property_set_index].property_set
 
         return {}
 
@@ -537,7 +521,8 @@ class CLIView:
         """Adds a step to the transpilation sequence.
 
         Args:
-            step (TranspilationStep): `TranspilationStep` object to be added to the transpilation sequence.
+            step (TranspilationStep): `TranspilationStep` object to be added to the
+                                      transpilation sequence.
         """
         self._all_passes_data.append(
             [
@@ -785,9 +770,7 @@ class CLIView:
             height, width = stdscr.getmaxyx()
 
             # Check for clearing
-            panel_initiated = (
-                self._view_params["last_height"] + self._view_params["last_width"] > 0
-            )
+            panel_initiated = self._view_params["last_height"] + self._view_params["last_width"] > 0
             panel_resized = (
                 self._view_params["last_width"] != width
                 or self._view_params["last_height"] != height

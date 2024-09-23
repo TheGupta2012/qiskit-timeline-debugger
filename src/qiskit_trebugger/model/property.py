@@ -14,9 +14,7 @@ class Property:
         self.prop_type = prop_type
         self.state = state
 
-        if prop_type in (list, defaultdict) and (
-            len(value) > self.LARGE_VALUE_THRESHOLD
-        ):
+        if prop_type in (list, defaultdict) and (len(value) > self.LARGE_VALUE_THRESHOLD):
             print(len(value))
             self.value = "LARGE_VALUE"
         else:
