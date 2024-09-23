@@ -3,23 +3,25 @@ Implements the main Debugger class.
 Raises:
     DebuggerError: if multiple quantum circuits supplied for debugging
 """
+
 import curses
-from typing import Optional, Union
 import logging
 import warnings
+from typing import Optional, Union
+
 from IPython.display import display
-
-
-from qiskit import QuantumCircuit, transpile, Aer, __qiskit_version__
+from qiskit import QuantumCircuit, __version__, transpile
 from qiskit.providers.backend import Backend, BackendV1, BackendV2
 from qiskit.transpiler.basepasses import AnalysisPass, TransformationPass
+from qiskit_aer import Aer
 
-
-from qiskit_trebugger.model import TranspilerLoggingHandler
-from qiskit_trebugger.model import TranspilerDataCollector
-from qiskit_trebugger.model import TranspilationSequence
-from qiskit_trebugger.views.widget.timeline_view import TimelineView
+from qiskit_trebugger.model import (
+    TranspilationSequence,
+    TranspilerDataCollector,
+    TranspilerLoggingHandler,
+)
 from qiskit_trebugger.views.cli.cli_view import CLIView
+from qiskit_trebugger.views.widget.timeline_view import TimelineView
 
 from .debugger_error import DebuggerError
 
@@ -38,6 +40,7 @@ class Debugger:
         backend: Optional[Union[Backend, BackendV1, BackendV2]] = None,
         optimization_level: Optional[int] = 0,
         view_type: Optional[str] = "cli",
+        draw_coupling_map: Optional[bool] = False,
         show: Optional[bool] = True,
         **kwargs,
     ):
@@ -90,8 +93,7 @@ class Debugger:
         transpilation_sequence.general_info = {
             "backend": backend_name,
             "optimization_level": optimization_level,
-            "qiskit version": __qiskit_version__["qiskit"],
-            "terra version": __qiskit_version__["qiskit-terra"],
+            "qiskit version": __version__,
         }
 
         transpilation_sequence.original_circuit = circuit
@@ -117,7 +119,7 @@ class Debugger:
 
         if view_type == "jupyter":
             cls.view.update_summary()
-            cls.view.update_routing(final_circ, backend)
+            cls.view.update_routing(final_circ, backend, draw_coupling_map)
             cls.view.update_timeline(final_circ, kwargs.get("scheduling_method", None))
             cls.view.add_class("done")
         elif view_type == "cli":

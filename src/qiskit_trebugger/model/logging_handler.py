@@ -1,6 +1,8 @@
 """Implements a custom logging handler for the debugger
 """
+
 import logging
+
 from .log_entry import LogEntry
 
 

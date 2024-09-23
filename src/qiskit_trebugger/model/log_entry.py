@@ -1,4 +1,5 @@
 """Defines a log entry for the debugger"""
+
 from time import time
 
 

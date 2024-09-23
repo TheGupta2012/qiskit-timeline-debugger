@@ -4,4 +4,5 @@ global-exclude *.py[cod]
 recursive-include tests *.py 
 recursive-include imgs *.png 
 recursive-include imgs *.gif 
+include src/qiskit_trebugger/views/widget/resources/*.png
 include tests/ipython/*.ipynb 

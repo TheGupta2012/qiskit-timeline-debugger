@@ -1,29 +1,30 @@
 """Main Timeline View for the Debugger
 """
+
 import html
 import math
 import warnings
-from datetime import datetime
 from collections import defaultdict
-from IPython.display import HTML
+from datetime import datetime
+
 import ipywidgets as widgets
-
-
-from qiskit.converters import dag_to_circuit, circuit_to_dag
+from IPython.display import HTML
+from qiskit.converters import circuit_to_dag, dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 
+from ...debugger_error import DebuggerError
+from ...model.circuit_comparator import CircuitComparator
+from ...model.circuit_stats import CircuitStats
+from ...model.pass_type import PassType
 from .button_with_value import ButtonWithValue
 from .timeline_utils import (
+    get_args_panel,
+    get_spinner_html,
+    get_styles,
     view_circuit,
     view_routing,
     view_timeline,
-    get_spinner_html,
-    get_styles,
-    get_args_panel,
 )
-from ...model.pass_type import PassType
-from ...model.circuit_stats import CircuitStats
-from ...model.circuit_comparator import CircuitComparator
 
 
 class TimelineView(widgets.VBox):
@@ -58,8 +59,8 @@ class TimelineView(widgets.VBox):
         general_info_panel.add_class("options")
         # summary panel
         summary_heading = widgets.HTML(
-            "<h3 style = 'margin: 10px 20px 0 30px; \
-                font-weight: bold;'> Transpilation overview</h3>"
+            "<h2 style = 'margin: 10px 20px 0 30px; \
+                font-weight: bold;'> Transpilation overview</h2>"
         )
         summary_panel = widgets.VBox(
             [
@@ -78,8 +79,8 @@ class TimelineView(widgets.VBox):
 
         # routing panel
         routing_heading = widgets.HTML(
-            "<h3 style = 'margin: 10px 20px 0 30px; \
-                font-weight: bold;'> Routing Overview</h3>"
+            "<h2 style = 'margin: 10px 20px 0 30px; \
+                font-weight: bold;'> Routing Overview</h2>"
         )
 
         routing_panel = widgets.VBox(
@@ -89,7 +90,7 @@ class TimelineView(widgets.VBox):
                     [],
                     layout={
                         "width": "100%",
-                        "padding": "5px",
+                        "padding": "0 0 0 15px ",
                         "grid_template_columns": "repeat(2, 50%)",
                     },
                 ),
@@ -101,8 +102,8 @@ class TimelineView(widgets.VBox):
 
         # timeline panel
         timeline_sched_heading = widgets.HTML(
-            "<h3 style = 'margin: 10px 20px 0 30px; \
-                font-weight: bold;'> Timeline Drawer</h3>"
+            "<h2 style = 'margin: 10px 20px 0 30px; \
+                font-weight: bold;'> Timeline Drawer</h2>"
         )
         timeline_sched_panel = widgets.VBox(
             [
@@ -129,7 +130,7 @@ class TimelineView(widgets.VBox):
         param_button.add_class("toggle-button")
         param_button.on_click(self._add_args)
 
-        params_panel = widgets.VBox([param_button], layout=dict(margin="0 1% 0 1%"))
+        params_panel = widgets.VBox([param_button], layout={"margin": "0 1% 0 1%"})
 
         self.timeline_panel = widgets.VBox([], layout={"width": "100%"})
         timeline_wpr = widgets.Box(
@@ -172,7 +173,7 @@ class TimelineView(widgets.VBox):
             children=[timeline_wpr], layout={"width": "100%"}
         )
 
-        pass_panel = widgets.VBox([toggle_pass_button], layout=dict(margin="0 1% 0 1%"))
+        pass_panel = widgets.VBox([toggle_pass_button], layout={"margin": "0 1% 0 1%"})
 
         super().__init__(*args, **kwargs)
         self.children = (
@@ -195,6 +196,7 @@ class TimelineView(widgets.VBox):
             "timeline": timeline_sched_panel,
             "params": params_panel,
             "pass": pass_panel,
+            "debug_output": widgets.Output(),
         }
 
         self.kwargs_box = None
@@ -318,47 +320,57 @@ class TimelineView(widgets.VBox):
 
         return overview_children
 
-    def update_routing(self, circ, backend):
+    def update_routing(self, circ, backend, show_routing):
         """Update the routing information after the transpilation"""
         self.panels["routing"].children[1].add_class("routing-panel")
         self.panels["routing"].children[1].children = self._get_routing_panel(
-            circ, backend
+            circ, backend, show_routing
         )
 
-    def _get_routing_panel(self, final_circuit, backend):
+    def _get_routing_panel(self, final_circuit, backend, show_routing):
         # get two views of the routing
+        if show_routing:
+            try:
+                virtual_head = widgets.HTML(
+                    r"""<p class = 'label-purple-back'>
+                        Virtual Mapping  </p>
+                        """
+                )
+                physical_head = widgets.HTML(
+                    r"""<p class = 'label-purple-back'>
+                        Physical Mapping  </p>
+                    """
+                )
+                layout = {
+                    "width": "100%",
+                    "height": "100%",
+                    "margin": "0 0 0 1%",
+                    "padding": "5px 0px 2px 15px",
+                }
+                virtual_routing = widgets.Output(layout=layout)
+                virtual_routing.append_display_data(
+                    HTML(view_routing(final_circuit, backend, "virtual"))
+                )
+                physical_routing = widgets.Output(layout=layout)
+                physical_routing.append_display_data(
+                    HTML(view_routing(final_circuit, backend, "physical"))
+                )
 
-        virtual_head = widgets.HTML(
-            r"""<p class = 'label-purple-back'>
-                 Virtual Mapping  </p>
-                """
-        )
-        physical_head = widgets.HTML(
-            r"""<p class = 'label-purple-back'>
-                Physical Mapping  </p>
-            """
-        )
-        layout = {
-            "width": "100%",
-            "height": "100%",
-            "margin": "0 0 0 1%",
-            "padding": "5px 0px 2px 15px",
-        }
-        virtual_routing = widgets.Output(layout=layout)
-        virtual_routing.append_display_data(
-            HTML(view_routing(final_circuit, backend, "virtual"))
-        )
-        physical_routing = widgets.Output(layout=layout)
-        physical_routing.append_display_data(
-            HTML(view_routing(final_circuit, backend, "physical"))
-        )
-
-        return [
-            virtual_head,
-            physical_head,
-            virtual_routing,
-            physical_routing,
-        ]
+                return [
+                    virtual_head,
+                    physical_head,
+                    virtual_routing,
+                    physical_routing,
+                ]
+            except Exception as ex:
+                raise DebuggerError(
+                    "Error plotting coupling map for backend. Ensure that graphviz is installed."
+                    "You can install it using this reference - https://graphviz.org/download/"
+                ) from ex
+        else:
+            return [
+                widgets.HTML("<p class='label-text-2'> Coupling map not displayed </p>")
+            ]
 
     def update_timeline(self, circ, schedule_type):
         """Update the timeline drawer information after the transpilation"""
@@ -374,14 +386,13 @@ class TimelineView(widgets.VBox):
             "margin": "0 0 0 1%",
             "padding": "5px 0px 2px 15px",
         }
-        timeline_widget = widgets.Output()
+        timeline_widget = None
         if schedule_type is None:
-            timeline_widget.append_display_data(
-                HTML(
-                    "<p class='label-text-2'> No scheduling method was set </p>",
-                )
+            timeline_widget = widgets.HTML(
+                "<p class='label-text-2'> No scheduling method was set </p>",
             )
         else:
+            timeline_widget = widgets.Output()
             timeline_widget.layout = layout
             timeline_widget.append_display_data(HTML(view_timeline(final_circuit)))
 
@@ -440,7 +451,7 @@ class TimelineView(widgets.VBox):
         _item.on_click(self.on_pass)
         step_items.append(widgets.Box([_item]))
 
-        _item = widgets.HTML(r"<p>" + str(step.index) + " - " + step.name + "</p>")
+        _item = widgets.HTML("<div>" + str(step.index) + " | " + step.name + "</div>")
         _item.add_class(step.pass_type.value.lower())
         step_items.append(_item)
 
@@ -508,7 +519,7 @@ class TimelineView(widgets.VBox):
             step_items,
             layout={
                 "width": "100%",
-                "min_height": "47px",
+                "min_height": "50px",
             },
         )
         item_wpr.add_class("transpilation-step")
@@ -523,6 +534,16 @@ class TimelineView(widgets.VBox):
         )
 
     def show_details(self, step_index, title, content):
+        """Show the details of the transpilation step
+
+        Args:
+            step_index (int): Index of the transpilation step
+            title (str): Title of the details
+            content (str): Content of the details
+
+        Returns:
+            None
+        """
         details_panel = self.timeline_panel.children[2 * step_index + 1]
         out = widgets.Output(layout={"width": "100%"})
         details_panel.children = (out,)
@@ -530,14 +551,11 @@ class TimelineView(widgets.VBox):
         if "step-details-hide" in details_panel._dom_classes:
             details_panel.remove_class("step-details-hide")
 
-        html_str = """
+        html_str = f"""
         <div class="content-wpr">
             <div class="content">{content}</div>
         </div>
-        """.format(
-            content=content
-        )
-
+        """
         out.append_display_data(HTML(html_str))
 
     def on_pass(self, btn):
@@ -618,7 +636,6 @@ class TimelineView(widgets.VBox):
                 indent=False,
             )
             diff_chk.observe(self.on_diff)
-
             tab.children[0].children = (diff_chk, img_wpr)
 
         else:

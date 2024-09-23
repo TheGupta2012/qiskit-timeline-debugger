@@ -1,17 +1,16 @@
 import unittest
 
 from qiskit.circuit.random import random_circuit
-from qiskit.providers.fake_provider import (
+from qiskit_ibm_runtime.fake_provider import (
     FakeAlmaden,
-    FakeAthens,
-    FakeBelem,
-    FakeKolkata,
-)
-from qiskit.providers.fake_provider import (
     FakeAlmadenV2,
+    FakeAthens,
     FakeAthensV2,
+    FakeBelem,
     FakeBelemV2,
+    FakeKolkata,
     FakeKolkataV2,
+    FakeSherbrooke,
 )
 
 from qiskit_trebugger import Debugger

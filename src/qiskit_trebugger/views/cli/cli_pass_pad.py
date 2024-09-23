@@ -2,8 +2,8 @@
 """
 
 import curses
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
 
 import tabulate
 
@@ -94,9 +94,11 @@ class TranspilerPassPad:
 
         self._start_row += 2
         stats = self.transpiler_pass.circuit_stats
-        props_string = f"Depth : {stats.depth} | Width : {stats.width} | Size : {stats.size} | 1Q Ops : {stats.ops_1q} | 2Q Ops : {stats.ops_2q}"[
-            : self.width - 1
-        ]
+        props_string = (
+            f"Depth : {stats.depth} | Width : {stats.width} | "
+            f"Size : {stats.size} | 1Q Ops : {stats.ops_1q} | "
+            f"2Q Ops : {stats.ops_2q}"[: self.width - 1]
+        )
 
         props_string = props_string[: self.width - 1]
         props_offset = self._get_center(self.width, len(props_string))
@@ -123,7 +125,7 @@ class TranspilerPassPad:
                 elif name == "optimization_loop_minimum_point_state":
                     txt = f"""score : {property_.value.score}, since : {property_.value.since}"""
                 elif name == "commutation_set":
-                    txt = f"(dict)"
+                    txt = "(dict)"
                 else:
                     txt = (
                         "(dict)"
@@ -293,7 +295,7 @@ class TranspilerPassPad:
 
         # add the layout to the pad
         self._start_row += 2
-        self._display_header(f"Commutation Set"[: self.width - 1])
+        self._display_header("Commutation Set"[: self.width - 1])
         self._start_row += 1
 
         comm_set = self.property_set["commutation_set"].value
@@ -318,7 +320,7 @@ class TranspilerPassPad:
             ).splitlines()
 
             table_offset = self._get_center(self.width, len(comm_table[0]))
-            for row, _ in enumerate(comm_table):
+            for row in range(len(comm_table)):
                 self.pad.addstr(
                     row + self._start_row,
                     table_offset,

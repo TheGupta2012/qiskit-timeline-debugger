@@ -5,10 +5,8 @@ import curses
 from curses.textpad import Textbox
 
 import tabulate
-
-from qiskit.dagcircuit import DAGCircuit
 from qiskit.converters import dag_to_circuit
-
+from qiskit.dagcircuit import DAGCircuit
 
 from ...model.pass_type import PassType
 from .cli_pass_pad import TranspilerPassPad
@@ -44,11 +42,15 @@ class CLIView:
         self._title_string = "Qiskit Transpiler Debugger"
 
         self._status_strings = {
-            "normal": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down | 'I': Index into a pass | 'H': Toggle overview | 'Q': Exit",
+            "normal": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down |"
+            " 'I': Index into a pass | 'H': Toggle overview | 'Q': Exit",
             "index": " STATUS BAR  | Enter the index of the pass you want to view : ",
             "invalid": " STATUS BAR  | Invalid input entered. Press Enter to continue.",
-            "out_of_bounds": " STATUS BAR  | Number entered is out of bounds. Please Enter to continue.",
-            "pass": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down | 'N/P': Move to next/previous | 'I': Index into a pass | 'B': Back to home | 'Q': Exit",
+            "out_of_bounds": " STATUS BAR  | Number entered is out of bounds."
+            " Press Enter to continue.",
+            "pass": " STATUS BAR  | Arrow keys: Scrolling | 'U/D': Page up/down |"
+            " 'N/P': Move to next/previous | 'I': Index into a pass |"
+            " 'B': Back to home | 'Q': Exit",
         }
 
         self._colors = {
@@ -402,13 +404,16 @@ class CLIView:
 
             STATUS STATES
                 -normal        : normal status bar
-                -index         : index status bar - user is entering the numbers (requires input to be shown to user)
+                -index         : index status bar - user is entering the numbers
+                                 (requires input to be shown to user)
                 -invalid       : error status bar - user has entered an invalid character
                 -out_of_bounds : out of bounds status bar - user has entered a number out of bounds
-                -pass          : pass status bar - user has entered a valid number and is now viewing the pass details
+                -pass          : pass status bar - user has entered a valid number and is now
+                                 viewing the pass details
 
                 NOTE : processing is done after the user presses enter.
-                This will only return a status bar window, TEXT processing is done within this function ONLY
+                This will only return a status bar window, TEXT processing is done within
+                this function ONLY
         Returns:
             curses.window : Statusbar window object
         """
@@ -537,7 +542,8 @@ class CLIView:
         """Adds a step to the transpilation sequence.
 
         Args:
-            step (TranspilationStep): `TranspilationStep` object to be added to the transpilation sequence.
+            step (TranspilationStep): `TranspilationStep` object to be added to the
+                                      transpilation sequence.
         """
         self._all_passes_data.append(
             [
