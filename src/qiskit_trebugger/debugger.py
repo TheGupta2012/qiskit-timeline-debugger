@@ -62,17 +62,13 @@ class Debugger:
             raise DebuggerError("Invalid view type supplied!")
 
         if not isinstance(circuit, QuantumCircuit):
-            raise DebuggerError(
-                "Debugger currently supports single QuantumCircuit only!"
-            )
+            raise DebuggerError("Debugger currently supports single QuantumCircuit only!")
         if backend is None:
             backend = Aer.get_backend("qasm_simulator")
 
         if view_type == "cli":
             if not cls._is_regular_interpreter():
-                raise DebuggerError(
-                    "Can not invoke CLI view in IPython or Juptyer Environment!"
-                )
+                raise DebuggerError("Can not invoke CLI view in IPython or Juptyer Environment!")
             cls.view = CLIView()
         else:
             cls.view = TimelineView()

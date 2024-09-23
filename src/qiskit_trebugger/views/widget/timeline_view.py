@@ -133,9 +133,7 @@ class TimelineView(widgets.VBox):
         params_panel = widgets.VBox([param_button], layout={"margin": "0 1% 0 1%"})
 
         self.timeline_panel = widgets.VBox([], layout={"width": "100%"})
-        timeline_wpr = widgets.Box(
-            [self.timeline_panel], layout=self.layouts["timeline"]
-        )
+        timeline_wpr = widgets.Box([self.timeline_panel], layout=self.layouts["timeline"])
 
         stats_title = widgets.Label("Circuit Stats")
         stats_title.add_class("stats-title")
@@ -155,9 +153,7 @@ class TimelineView(widgets.VBox):
             widgets.Label(""),
         ]
 
-        stats_panel = widgets.GridBox(
-            self.stats_labels, layout=self.layouts["tabular_data"]
-        )
+        stats_panel = widgets.GridBox(self.stats_labels, layout=self.layouts["tabular_data"])
         stats_panel.add_class("table")
 
         toggle_pass_button = widgets.Button(
@@ -169,9 +165,7 @@ class TimelineView(widgets.VBox):
         toggle_pass_button.add_class("toggle-button")
         toggle_pass_button.on_click(self._load_passes)
 
-        self.main_panel = widgets.HBox(
-            children=[timeline_wpr], layout={"width": "100%"}
-        )
+        self.main_panel = widgets.HBox(children=[timeline_wpr], layout={"width": "100%"})
 
         pass_panel = widgets.VBox([toggle_pass_button], layout={"margin": "0 1% 0 1%"})
 
@@ -368,16 +362,12 @@ class TimelineView(widgets.VBox):
                     "You can install it using this reference - https://graphviz.org/download/"
                 ) from ex
         else:
-            return [
-                widgets.HTML("<p class='label-text-2'> Coupling map not displayed </p>")
-            ]
+            return [widgets.HTML("<p class='label-text-2'> Coupling map not displayed </p>")]
 
     def update_timeline(self, circ, schedule_type):
         """Update the timeline drawer information after the transpilation"""
         self.panels["timeline"].children[1].add_class("timeline-panel")
-        self.panels["timeline"].children[1].children = self._get_timeline_panel(
-            circ, schedule_type
-        )
+        self.panels["timeline"].children[1].children = self._get_timeline_panel(circ, schedule_type)
 
     def _get_timeline_panel(self, final_circuit, schedule_type):
         layout = {
@@ -715,27 +705,16 @@ class TimelineView(widgets.VBox):
                                 str(step.index) + "," + property_.name
                             )
                         else:
-                            properties_panel.children[index + 1].value = str(
-                                property_.value
-                            )
+                            properties_panel.children[index + 1].value = str(property_.value)
 
                     prop_list = list(properties_panel.children)
                     for p_id in range(int(len(prop_list) / 2)):
-                        if (
-                            properties_panel.children[2 * p_id].value
-                            not in _property_set
-                        ):
+                        if properties_panel.children[2 * p_id].value not in _property_set:
                             properties_panel.children[2 * p_id].add_class("not-exist")
-                            properties_panel.children[2 * p_id + 1].add_class(
-                                "not-exist"
-                            )
+                            properties_panel.children[2 * p_id + 1].add_class("not-exist")
                         else:
-                            properties_panel.children[2 * p_id].remove_class(
-                                "not-exist"
-                            )
-                            properties_panel.children[2 * p_id + 1].remove_class(
-                                "not-exist"
-                            )
+                            properties_panel.children[2 * p_id].remove_class("not-exist")
+                            properties_panel.children[2 * p_id + 1].remove_class("not-exist")
                 else:
                     message = widgets.Label(value="Property set is empty!")
                     message.add_class("message")
@@ -758,9 +737,7 @@ class TimelineView(widgets.VBox):
                                 <pre class='level {1}'>[{1}]\
                                 </pre><pre class='log-entry {1}'>\
                                 {2}</pre>".format(
-                                datetime.fromtimestamp(entry.time).strftime(
-                                    "%H:%M:%S.%f"
-                                )[:-3],
+                                datetime.fromtimestamp(entry.time).strftime("%H:%M:%S.%f")[:-3],
                                 entry.levelname,
                                 entry.msg % entry.args,
                             )
@@ -786,9 +763,7 @@ class TimelineView(widgets.VBox):
                     + step.name
                     + '</span>.run(<span style="color: #0072c3;">dag</span>)</div>'
                 )
-                html_str = (
-                    html_str + '<pre class="help">' + step.run_method_docs + "</pre>"
-                )
+                html_str = html_str + '<pre class="help">' + step.run_method_docs + "</pre>"
                 tabs.children[3].append_display_data(HTML(html_str))
 
     def on_diff(self, change):
@@ -810,26 +785,18 @@ class TimelineView(widgets.VBox):
             details_panel = self.timeline_panel.children[2 * int(step_index) + 1]
             img_wpr = details_panel.children[0].children[0].children[1]
             img_wpr.outputs = []
-            img_wpr.append_display_data(
-                HTML(get_spinner_html())
-            )  # to get the loader gif
+            img_wpr.append_display_data(HTML(get_spinner_html()))  # to get the loader gif
 
             if change["new"]["value"]:
                 if step_index > 0:
-                    prev_dag = self._get_step_dag(
-                        self.transpilation_sequence.steps[step_index - 1]
-                    )
+                    prev_dag = self._get_step_dag(self.transpilation_sequence.steps[step_index - 1])
                     prev_circ = dag_to_circuit(prev_dag)
                 else:
                     prev_circ = None
 
-                curr_dag = self._get_step_dag(
-                    self.transpilation_sequence.steps[step_index]
-                )
+                curr_dag = self._get_step_dag(self.transpilation_sequence.steps[step_index])
                 curr_circ = dag_to_circuit(curr_dag)
-                fully_changed, disp_circ = CircuitComparator.compare(
-                    prev_circ, curr_circ
-                )
+                fully_changed, disp_circ = CircuitComparator.compare(prev_circ, curr_circ)
 
                 if fully_changed:
                     chk.description = "Circuit changed fully"
@@ -838,9 +805,7 @@ class TimelineView(widgets.VBox):
                 suffix = "diff_" + str(step_index)
             else:
                 if not chk.disabled:
-                    dag = self._get_step_dag(
-                        self.transpilation_sequence.steps[step_index]
-                    )
+                    dag = self._get_step_dag(self.transpilation_sequence.steps[step_index])
                     disp_circ = dag_to_circuit(dag)
                     suffix = "after_pass_" + str(step_index)
 
@@ -886,16 +851,11 @@ class TimelineView(widgets.VBox):
                 for node in val:
                     qargs = ", ".join(
                         [
-                            qarg.register.name
-                            + "<small>["
-                            + str(qarg.index)
-                            + "]</small>"
+                            qarg.register.name + "<small>[" + str(qarg.index) + "]</small>"
                             for qarg in node.qargs
                         ]
                     )
-                    v_arr.append(
-                        "<strong>" + node.name + "</strong>" + "(" + qargs + ")"
-                    )
+                    v_arr.append("<strong>" + node.name + "</strong>" + "(" + qargs + ")")
                 html_str = html_str + "<tr><td>" + " - ".join(v_arr) + "</td></tr>"
         elif property_name == "commutation_set":
             for key, val in property_.value.items():
@@ -903,10 +863,7 @@ class TimelineView(widgets.VBox):
                 if isinstance(key, tuple):
                     qargs = ", ".join(
                         [
-                            qarg.register.name
-                            + "<small>["
-                            + str(qarg.index)
-                            + "]</small>"
+                            qarg.register.name + "<small>[" + str(qarg.index) + "]</small>"
                             for qarg in key[0].qargs
                         ]
                     )
@@ -926,9 +883,7 @@ class TimelineView(widgets.VBox):
                         + ")"
                     )
                 else:
-                    key_str = (
-                        key.register.name + "<small>[" + str(key.index) + "]</small>"
-                    )
+                    key_str = key.register.name + "<small>[" + str(key.index) + "]</small>"
 
                 value_str = ""
                 if isinstance(val, list):
@@ -967,9 +922,7 @@ class TimelineView(widgets.VBox):
 
                                 nodes_arr.append(node_str)
 
-                            value_str = (
-                                value_str + "[" + (", ".join(nodes_arr)) + "]<br>"
-                            )
+                            value_str = value_str + "[" + (", ".join(nodes_arr)) + "]<br>"
                     value_str = value_str + "]"
 
                 html_str = (
@@ -982,10 +935,7 @@ class TimelineView(widgets.VBox):
                 )
         else:
             html_str = (
-                html_str
-                + "<tr><td><pre>"
-                + html.escape(str(property_.value))
-                + "</pre></td></tr>"
+                html_str + "<tr><td><pre>" + html.escape(str(property_.value)) + "</pre></td></tr>"
             )
         html_str = html_str + "</table>"
 
@@ -1000,15 +950,11 @@ class TimelineView(widgets.VBox):
         # Due to a bug in DAGCircuit.__eq__, we can not use ``step.dag != None``
 
         found_transform = False
-        while (
-            not isinstance(self.transpilation_sequence.steps[idx].dag, DAGCircuit)
-            and idx > 0
-        ):
+        while not isinstance(self.transpilation_sequence.steps[idx].dag, DAGCircuit) and idx > 0:
             idx = idx - 1
             if idx >= 0:
                 found_transform = (
-                    self.transpilation_sequence.steps[idx].pass_type
-                    == PassType.TRANSFORMATION
+                    self.transpilation_sequence.steps[idx].pass_type == PassType.TRANSFORMATION
                 )
 
         if found_transform is False:
@@ -1018,8 +964,6 @@ class TimelineView(widgets.VBox):
 
     def _get_step_property_set(self, step):
         if step.property_set_index is not None:
-            return self.transpilation_sequence.steps[
-                step.property_set_index
-            ].property_set
+            return self.transpilation_sequence.steps[step.property_set_index].property_set
 
         return {}

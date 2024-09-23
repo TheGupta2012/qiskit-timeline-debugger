@@ -23,6 +23,4 @@ class TranspilerLoggingHandler(logging.Handler):
 
     def emit(self, record):
         log_entry = LogEntry(record.levelname, record.msg, record.args)
-        self.transpilation_sequence.add_log_entry(
-            self.loggers_map[record.name], log_entry
-        )
+        self.transpilation_sequence.add_log_entry(self.loggers_map[record.name], log_entry)

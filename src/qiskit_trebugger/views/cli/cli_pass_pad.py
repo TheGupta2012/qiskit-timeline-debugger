@@ -57,9 +57,7 @@ class TranspilerPassPad:
         Args:
             None
         """
-        pass_name = f"{self.transpiler_pass.index}. {self.transpiler_pass.name}"[
-            : self.width - 1
-        ]
+        pass_name = f"{self.transpiler_pass.index}. {self.transpiler_pass.name}"[: self.width - 1]
         title_offset = self._get_center(self.width - 4, len(pass_name))
         self.pad.addstr(
             self._start_row,
@@ -79,9 +77,7 @@ class TranspilerPassPad:
         self._start_row += 2
         pass_type = self.transpiler_pass.pass_type.value
         pass_runtime = self.transpiler_pass.duration
-        info_string = f"Type : {pass_type} | Runtime (ms) : {pass_runtime}"[
-            : self.width - 1
-        ]
+        info_string = f"Type : {pass_type} | Runtime (ms) : {pass_runtime}"[: self.width - 1]
 
         self._display_header(info_string)
 
@@ -345,9 +341,7 @@ class TranspilerPassPad:
         self._start_row += 1
         pass_docs = self.transpiler_pass.get_docs()
 
-        pass_docs = (
-            "    " + pass_docs if pass_docs and pass_docs.count("\n") > 0 else ""
-        )
+        pass_docs = "    " + pass_docs if pass_docs and pass_docs.count("\n") > 0 else ""
         pass_docs = [[pass_docs], [self.transpiler_pass.run_method_docs]]
 
         docs_table = tabulate.tabulate(
@@ -380,9 +374,7 @@ class TranspilerPassPad:
             circ_string = [[self.circuit.draw(output="text", fold=100)]]
         else:
             circ_string = [
-                [
-                    f"Circuit depth {self.transpiler_pass.circuit_stats.depth} too large to display"
-                ]
+                [f"Circuit depth {self.transpiler_pass.circuit_stats.depth} too large to display"]
             ]
         circ_table = tabulate.tabulate(
             tabular_data=circ_string,
