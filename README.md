@@ -33,17 +33,17 @@ PIP will handle the dependencies required for the package automatically and woul
 - For example - 
 
 ```python
-from qiskit.providers.fake_provider import FakeCasablanca
+from qiskit_ibm_runtime.fake_provider import FakeCasablanca
 from qiskit.circuit.random import random_circuit 
 from qiskit_trebugger import Debugger
 import warnings
 
 warnings.simplefilter('ignore')
-debugger = Debugger(view_type = "jupyter")
+debugger = Debugger()
 backend = FakeCasablanca()
-circuit = random_circuit(num_qubits = 4, depth = 5 , seed = 44)
+circuit = random_circuit(num_qubits = 3, depth = 2 , seed = 42)
 # replace transpile call 
-debugger.debug(circuit, optimization_level = 2, backend = backend, initial_layout = list(range(4)))
+debugger.debug(circuit, view_type="jupyter", optimization_level = 2, backend = backend, initial_layout = list(range(4)))
 ``` 
 - On calling the debug method, a new jupyter widget is displayed providing a complete summary and details of the transpilation process for circuits of < 2000 depth
 - With an easy-to-use and responsive interface, users can quickly see which transpiler passes ran when, how they changed the quantum circuit, and what exactly changed.
